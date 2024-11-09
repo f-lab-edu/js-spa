@@ -7,20 +7,69 @@ function render(page){
     document.querySelector('#root').innerHTML = page;
 }
 
-const routes = {
-    "/": () => Home(),
-    "/login": () => Login(),
-    "/profile": () => Profile()
-}
+function login(e){
+    e.preventDefault();
+    const username = e.target.querySelector("input[type=text]").value;
+    const password = e.target.querySelector("input[type=password]").value;
 
-document.addEventListener("DOMContentLoaded", (e)=>{
-    const {pathname} = window.location;
-
-    const renderTarget = routes[pathname];
-    console.log(renderTarget)
-    if(!renderTarget){
-        render(Error())
+    if(!username || !password){
+        return;
     }
 
-    render(renderTarget());
-});
+    localStorage.setItem("isLogin", true);
+    window.history.pushState({}, null, "/")
+    render(Home())
+}
+
+function checkLogin(){
+    return localStorage.getItem("isLogin") === "true";
+}
+
+function logout(){
+    localStorage.setItem("isLogin", false);
+    window.history.pushState({}, null, "/login")
+    render(Login())
+}
+
+const routes = {
+    "/": () => {
+        const isLogin = checkLogin();
+        if(isLogin){
+            render(Home())
+            document.querySelector("#logout-btn").addEventListener("click", logout)
+        }else{
+            window.history.pushState({}, null, "/login")
+            render(Login())
+        }
+
+    },
+    "/login": () => {
+        render(Login())
+        document.getElementById("login-form").addEventListener("submit", login)
+    },
+    "/profile": () => {
+        const isLogin = checkLogin();
+        if(isLogin){
+            render(Profile())
+            document.querySelector("#logout-btn").addEventListener("click", logout)
+        }else{
+            window.history.pushState({}, null, "/login")
+            render(Login())
+        }
+    }
+}
+
+function router(){
+    const {pathname} = window.location;
+
+    const renderedPage = routes[pathname];
+    if(!renderedPage){
+        render(Error())
+        return;
+    }
+
+    renderedPage();
+}
+
+document.addEventListener("DOMContentLoaded", router);
+window.addEventListener("popstate", router)
