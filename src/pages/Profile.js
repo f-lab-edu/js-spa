@@ -1,6 +1,5 @@
 import Component from "../utils/Component.js";
 import {checkLogin, logout} from "../utils/utils.js";
-import router from "../router/router.js";
 
 export default class Profile extends Component{
 
@@ -12,7 +11,16 @@ export default class Profile extends Component{
         }
     }
 
+    setState(){
+        const user = JSON.parse(localStorage.getItem("user"));
+        console.log(user);
+        this.state.user = user;
+    }
+
     template() {
+
+        const {username, email, bio} = this.state.user;
+
         return `
             <div class="bg-gray-100 min-h-screen flex justify-center">
                 <div class="max-w-md w-full">
@@ -34,15 +42,15 @@ export default class Profile extends Component{
                       <form id="profile-form">
                         <div class="mb-4">
                           <label for="username" class="block text-gray-700 text-sm font-bold mb-2">사용자 이름</label>
-                          <input type="text" id="username" name="username" value="홍길동" class="w-full p-2 border rounded">
+                          <input type="text" id="username" name="username" value="${username}" class="w-full p-2 border rounded">
                         </div>
                         <div class="mb-4">
                           <label for="email" class="block text-gray-700 text-sm font-bold mb-2">이메일</label>
-                          <input type="email" id="email" name="email" value="hong@example.com" class="w-full p-2 border rounded">
+                          <input type="email" id="email" name="email" value="${email}" class="w-full p-2 border rounded">
                         </div>
                         <div class="mb-6">
                           <label for="bio" class="block text-gray-700 text-sm font-bold mb-2">자기소개</label>
-                          <textarea id="bio" name="bio" rows="4" class="w-full p-2 border rounded">안녕하세요, 항해플러스에서 열심히 공부하고 있는 홍길동입니다.</textarea>
+                          <textarea id="bio" name="bio" rows="4" class="w-full p-2 border rounded">${bio}</textarea>
                         </div>
                         <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded font-bold">프로필 업데이트</button>
                       </form>
@@ -57,14 +65,6 @@ export default class Profile extends Component{
         `;
     }
 
-    init(){
-        const {username, email, bio} = JSON.parse(localStorage.getItem("user"));
-        console.log(username, email, bio)
-        this.target.querySelector('#username').value = username;
-        this.target.querySelector('#email').value = email;
-        this.target.querySelector('#bio').value = bio;
-    }
-
     setEvent() {
         this.target.querySelector("#logout").addEventListener("click", logout)
         this.target.querySelector("#profile-form").addEventListener("submit", this.updateProfile.bind(this))
@@ -76,6 +76,6 @@ export default class Profile extends Component{
         const email = this.target.querySelector('#email').value;
         const bio = this.target.querySelector('#bio').value;
         localStorage.setItem("user", JSON.stringify({username, email, bio}))
-        router();
+        this.render();
     }
 }
