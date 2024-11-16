@@ -1,19 +1,50 @@
-import Home from "../pages/Home.js";
-import Login from "../pages/Login.js";
-import Profile from "../pages/Profile.js";
-import Error from "../pages/Error.js";
+const routes = {};
 
-const routes = {
-  "/": (target) => new Home(target),
-  "/login": (target) => new Login(target),
-  "/profile": (target) => new Profile(target),
-  "/error": (target) => new Error(target),
+const checkLogin = () => {
+  return !!localStorage.getItem("user");
 };
 
-export default function router() {
-  const { pathname } = window.location;
-  const rootElement = document.getElementById("root");
+const render = (path, root) => {
+  let destination = routes[path];
 
-  const PageClass = routes[pathname] || routes["/error"];
-  PageClass(rootElement);
-}
+  if (!destination) {
+    destination = routes["error"];
+  } else {
+    const isLogin = checkLogin();
+
+    if (path === "/login" && isLogin) {
+      path = "/";
+      destination = routes[path];
+    }
+
+    if (path !== "/login" && !isLogin) {
+      path = "/login";
+      destination = routes[path];
+    }
+  }
+
+  window.history.pushState(null, null, path);
+  destination(root);
+
+  const links = root.querySelectorAll("a");
+
+  links.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const path = e.target.pathname;
+      if (path === "/login") {
+        localStorage.removeItem("user");
+      }
+      render(path, root);
+    });
+  });
+};
+
+const add = (path, pageComponent) => {
+  routes[path] = pageComponent;
+};
+
+export default {
+  add,
+  render,
+};

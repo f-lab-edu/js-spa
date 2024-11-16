@@ -26,7 +26,7 @@ describe('기본과제 테스트', () => {
   })
 
   describe('1. 라우팅 구현', () => {
-    it('"/" 경로로 접근하면 홈 페이지가 렌더링된다', () => {
+    it('"/" 경로로 접근하면 홈 페이지가 렌더링된다', async () => {
       window.history.pushState({}, '', '/');
       window.dispatchEvent(new Event('popstate'));
       expect(document.body.innerHTML).toContain('항해플러스');

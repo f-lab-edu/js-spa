@@ -1,27 +1,9 @@
-import Component from "../utils/Component.js";
-import {checkLogin, logout} from "../utils/utils.js";
+import router from "../router/router.js";
 
-export default class Profile extends Component{
+const profile = (root) => {
+  const { username, email, bio } = JSON.parse(localStorage.getItem("user"));
 
-    render() {
-        if(checkLogin()){
-            super.render()
-        }else{
-            logout();
-        }
-    }
-
-    setState(){
-        const user = JSON.parse(localStorage.getItem("user"));
-        console.log(user);
-        this.state.user = user;
-    }
-
-    template() {
-
-        const {username, email, bio} = this.state.user;
-
-        return `
+  root.innerHTML = `
             <div class="bg-gray-100 min-h-screen flex justify-center">
                 <div class="max-w-md w-full">
                   <header class="bg-blue-600 text-white p-4 sticky top-0">
@@ -31,8 +13,8 @@ export default class Profile extends Component{
                   <nav class="bg-white shadow-md p-2 sticky top-14">
                     <ul class="flex justify-around">
                       <li><a href="/" class="text-gray-600">홈</a></li>
-                      <li><a href="/profile" class="text-blue-600">프로필</a></li>
-                      <li><a id="logout" href="#" class="text-gray-600">로그아웃</a></li>
+                      <li><a href="/profile" class="text-blue-600 font-bold">프로필</a></li>
+                      <li><a id="logout" href="/login" class="text-gray-600">로그아웃</a></li>
                     </ul>
                   </nav>
     
@@ -63,19 +45,21 @@ export default class Profile extends Component{
                 </div>
             </div>
         `;
-    }
 
-    setEvent() {
-        this.target.querySelector("#logout").addEventListener("click", logout)
-        this.target.querySelector("#profile-form").addEventListener("submit", this.updateProfile.bind(this))
-    }
+  const profileForm = root.querySelector("#profile-form");
 
-    updateProfile(event){
-        event.preventDefault();
-        const username = this.target.querySelector('#username').value;
-        const email = this.target.querySelector('#email').value;
-        const bio = this.target.querySelector('#bio').value;
-        localStorage.setItem("user", JSON.stringify({username, email, bio}))
-        this.render();
-    }
-}
+  profileForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    // 아래와 같이 작성하면 브라우저에서는 오류가 안 나는데 테스트에서 오류남
+    // const username = e.target.username.value;
+    // const email = e.target.email.value;
+    // const bio = e.target.bio.value;
+    const username = e.target.querySelector("#username").value;
+    const email = e.target.querySelector("#email").value;
+    const bio = e.target.querySelector("#bio").value;
+    localStorage.setItem("user", JSON.stringify({ username, email, bio }));
+    router.render("/profile", root);
+  });
+};
+
+export default profile;
