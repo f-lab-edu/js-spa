@@ -1,4 +1,6 @@
-const error = (root) => {
+import router from "../router/router";
+
+const NotFoundPage = (root) => {
   root.innerHTML = `
     <main class="bg-gray-100 flex items-center justify-center min-h-screen">
       <div class="bg-white p-8 rounded-lg shadow-md w-full text-center" style="max-width: 480px">
@@ -14,6 +16,12 @@ const error = (root) => {
       </div>
     </main>
   `;
+
+  const homeLink = root.querySelector("a[href='/']");
+  homeLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    router.render("/", root);
+  });
 };
 
-export default error;
+export default NotFoundPage;

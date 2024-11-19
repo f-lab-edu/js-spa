@@ -1,6 +1,6 @@
 import router from "../router/router.js";
 
-const login = (root) => {
+const LoginPage = (root) => {
   root.innerHTML = `
   <main class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -38,4 +38,4 @@ const login = (root) => {
   });
 };
 
-export default login;
+export default LoginPage;

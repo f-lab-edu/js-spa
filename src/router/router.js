@@ -17,7 +17,7 @@ const render = (path, root) => {
       destination = routes[path];
     }
 
-    if (path !== "/login" && !isLogin) {
+    if (path === "/profile" && !isLogin) {
       path = "/login";
       destination = routes[path];
     }
@@ -26,8 +26,7 @@ const render = (path, root) => {
   window.history.pushState(null, null, path);
   destination(root);
 
-  const links = root.querySelectorAll("a");
-
+  const links = root.querySelectorAll("nav li");
   links.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
@@ -37,6 +36,25 @@ const render = (path, root) => {
       }
       render(path, root);
     });
+  });
+
+  window.addEventListener("error", (e) => {
+    console.error(e);
+    const errorBoundary = `
+      <div id="error-boundary" class="fixed bottom-4 left-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg shadow-lg transition-opacity duration-300 hover:opacity-75" role="alert">
+        <div class="flex justify-between items-center">
+          <div>
+            <strong class="font-bold">오류 발생!</strong>
+            <span class="block sm:inline ml-1">${
+              e.message || "알 수 없는 오류가 발생했습니다."
+            }</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    root.querySelector("#error-boundary")?.remove();
+    root.innerHTML += errorBoundary;
   });
 };
 
